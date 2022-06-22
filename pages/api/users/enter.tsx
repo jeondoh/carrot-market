@@ -5,17 +5,26 @@ import client from "@libs/client/client";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { phone, email } = req.body;
   const payload = phone ? { phone: +phone } : { email };
-  // phone or email을 key로 설정, create / update
-  const user = await client.user.upsert({
-    where: {
-      ...payload,
+
+  const token = await client.token.create({
+    data: {
+      payload: "1234",
+      user: {
+        connectOrCreate: {
+          // connectOrCreate : 유저를 찾지 못했을 때 생성해줌
+          // user 테이블의 phone or email을 key로 설정, create
+          where: {
+            ...payload,
+          },
+          create: {
+            name: "Anonymous",
+            ...payload,
+          },
+        },
+      },
     },
-    create: {
-      name: "Anonymous",
-      ...payload,
-    },
-    update: {},
   });
+  console.log(token);
 
   res.status(200).end();
 }
