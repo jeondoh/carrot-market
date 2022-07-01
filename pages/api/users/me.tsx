@@ -16,4 +16,9 @@ async function handler(
   });
 }
 
-export default withAPISession(withHandler("GET", handler));
+export default withAPISession(
+  withHandler({
+    method: "GET",
+    fn: handler,
+  })
+);
